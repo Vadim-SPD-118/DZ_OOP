@@ -6,132 +6,132 @@ class Student:
         self.finished_courses = []
         self.courses_in_progress = []
         self.grades = {}
-    # Создаём метод выставления оценок лекторам
+
+    # Метод выставления оценок лекторам
     def rate_speaker(self, speaker, course, grade_speaker):
         if isinstance(speaker, Lecturer) and course in speaker.courses_attached and course in self.courses_in_progress:
-            if course in speaker.grades_speaker:
-                speaker.grades_speaker[course] += [grade_speaker]
+            if course in speaker.grades:    
+                speaker.grades[course].append(grade_speaker)
             else:
-                speaker.grades_speaker[course] = [grade_speaker]
+                speaker.grades[course] = [grade_speaker]
         else:
             return 'Ошибка'
 
-        
+    # Метод вычисления средней оценки за лекции   
+    def average_grade(self):
+        total = 0
+        count = 0
+        for grades in self.grades.values():
+            total += sum(grades)
+            count += len(grades)
+        return total / count if count > 0 else 0
+    
+    # Перегрузка метода
+    def __str__(self):
+        return (f'\n'
+                f'Студент\n'
+                f'Имя: {self.name}\n'
+                f'Фамилия: {self.surname}\n'
+                f'Средняя оценка за домашние задания: {self.average_grade():.1f}\n'
+                f'Курсы в процессе изучения: {", ".join(self.courses_in_progress)}\n'
+                f'Завершенные курсы: {", ".join(self.finished_courses)}\n')
+
 class Mentor:
     def __init__(self, name, surname):
         self.name = name
         self.surname = surname
-      #  self.courses_attached = []
+        self.courses_attached = []
         
-
-        
-    # Задание № 1. Создаём класс-наследник от Mentor - Lecturer (лекторы)
 class Lecturer(Mentor):
     def __init__(self, name, surname):
-        self.courses_attached = []
-        self.grades_speaker = {}
+        super().__init__(name, surname)
+        self.grades = {}
+
+    # Метод вычисления средней оценки за лекции
+    def average_grade(self):
+        total = 0
+        count = 0
+        for grades in self.grades.values():
+            total += sum(grades)
+            count += len(grades)
+        return total / count if count > 0 else 0
+    
+    def __str__(self):
+        return (f'Лектор\n'
+                f'Имя: {self.name}\n'
+                f'Фамилия: {self.surname}\n'
+                f'Средняя оценка за лекции: {self.average_grade():.1f}\n')
 
 
     # Задание № 1. -Создаём класс-наследник от Mentor - Reviewer (эксперты, проверяющие домашние задания)
 class Reviewer(Mentor):
     def __init__(self, name, surname):
-        self.courses_attached = []
+        super().__init__(name, surname)
+
         # Создаём метод выставления оценок студентам
     def rate_hw(self, student, course, grade):
         if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress:
             if course in student.grades:
-                student.grades[course] += [grade]
+                student.grades[course].append(grade)
             else:
                 student.grades[course] = [grade]
         else:
             return 'Ошибка'
-
-
-best_student = Student('Ruoy', 'Eman', 'your_gender')
-best_student.courses_in_progress += ['Python', 'Java']
- 
-cool_reviever = Reviewer('Some', 'Buddy')
-cool_reviever.courses_attached += ['Python', 'Java']
-
-cool_speaker = Lecturer('Harry', 'James')
-cool_speaker.courses_attached += ['Python', 'Java']
- 
-cool_reviever.rate_hw(best_student, 'Python', 10)
-cool_reviever.rate_hw(best_student, 'Python', 10)
-cool_reviever.rate_hw(best_student, 'Java', 10)
-
-best_student.rate_speaker(cool_speaker, 'Python', 10)
-best_student.rate_speaker(cool_speaker, 'Python', 10)
-best_student.rate_speaker(cool_speaker, 'Java', 10)
- 
-print('Оценки студентам:', best_student.grades)
-
-print('Оценки лекторам:',cool_speaker.grades_speaker)
-
-
-
-
-    # def grade_s(self, lecturer, course, grade):
-    #     if isinstance(lecturer, Lecturer) and course in self.finished_courses and course in lecturer.courses_attached:
-    #         if course in lecturer.grades_f_s:
-    #             lecturer.grades_f_s[course] += [grade]
-    #         else:
-    #             lecturer.grades_f_s[course] = [grade]
-    #     else:
-    #         return 'Ошибка'
-
-
-
-
-
-# class Student:
-#     def __init__(self, name, surname, gender):
-#         self.name = name
-#         self.surname = surname
-#         self.gender = gender
-#         self.finished_courses = []
-#         self.courses_in_progress = []
-#         self.grades = {}
-
-#         def add_courses(self, course_name):
-#    		    self.finished_courses.append(course_name)   
-
-     
-# class Mentor:
-#     def __init__(self, name, surname):
-#         self.name = name
-#         self.surname = surname
-#         self.courses_attached = []
         
-#     def rate_hw(self, student, course, grade):
-#         if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress:
-#             if course in student.grades:
-#                 student.grades[course] += [grade]
-#             else:
-#                 student.grades[course] = [grade]
-#         else:
-#             return 'Ошибка'
-
-# best_student = Student('Ruoy', 'Eman', 'your_gender')
-# best_student.courses_in_progress += ['Python', 'Java']
-
-# cool_mentor = Mentor('Some', 'Buddy')
-# cool_mentor.courses_attached += ['Python', 'Java']
-
-# cool_mentor.rate_hw(best_student, 'Python', 10)
-# cool_mentor.rate_hw(best_student, 'Python', 10)
-# cool_mentor.rate_hw(best_student, 'Python', 10)
-# cool_mentor.rate_hw(best_student, 'Java', 10)
-# cool_mentor.rate_hw(best_student, 'Java', 10)
-
-# print(best_student.grades)
+    def __str__(self):
+        return (f'Проверяющий\n'
+                f'Имя: {self.name}\n'
+                f'Фамилия: {self.surname}\n')
 
 
-# нужно проставить оценки лекторам по типу:
-# student_1.rate_lect(lecturer_1, 'Python', 9)
-# student_1.rate_lect(lecturer_1, 'Python', 10)
-# student_1.rate_lect(lecturer_1, 'Python', 10)
-# и студентам аналогично.
+best_student_1 = Student('Ruoy', 'Eman', 'your_gender')
+best_student_1.courses_in_progress += ['Python', 'Java']
+best_student_1.finished_courses = ['Введение в программирование']
+
+best_student_2 = Student('Elvis', 'Presley', 'your_gender')
+best_student_2.courses_in_progress += ['Python', 'Java']
+best_student_2.finished_courses = ['Git']
+ 
+cool_reviever_1 = Reviewer('Some', 'Buddy')
+cool_reviever_1.courses_attached += ['Python', 'Java']
+
+cool_reviever_2 = Reviewer('Louis', 'Armstrong')
+cool_reviever_2.courses_attached += ['Python', 'Java']
+
+cool_speaker_1 = Lecturer('Harry', 'James')
+cool_speaker_1.courses_attached += ['Python', 'Java']
+
+cool_speaker_2 = Lecturer('Billie', 'Holyday')
+cool_speaker_2.courses_attached += ['Python', 'Java']
+ 
+cool_reviever_1.rate_hw(best_student_1, 'Python', 8)
+cool_reviever_1.rate_hw(best_student_1, 'Python', 5)
+cool_reviever_1.rate_hw(best_student_1, 'Java', 10)
+cool_reviever_1.rate_hw(best_student_1, 'Java', 9)
+
+cool_reviever_2.rate_hw(best_student_2, 'Python', 7)
+cool_reviever_2.rate_hw(best_student_2, 'Python', 8)
+cool_reviever_2.rate_hw(best_student_2, 'Java', 9)
+cool_reviever_2.rate_hw(best_student_2, 'Java', 10)
+
+best_student_1.rate_speaker(cool_speaker_1, 'Python', 10)
+best_student_1.rate_speaker(cool_speaker_1, 'Python', 8)
+best_student_1.rate_speaker(cool_speaker_1, 'Java', 10)
+best_student_1.rate_speaker(cool_speaker_1, 'Java', 9)
+
+best_student_2.rate_speaker(cool_speaker_2, 'Python', 10)
+best_student_2.rate_speaker(cool_speaker_2, 'Python', 10)
+best_student_2.rate_speaker(cool_speaker_2, 'Java', 10)
+best_student_2.rate_speaker(cool_speaker_2, 'Java', 9)
+ 
+
+print(best_student_1)
+print(best_student_2)
+print(cool_reviever_1)
+print(cool_reviever_2)
+print(cool_speaker_1)
+print(cool_speaker_2)
+
 
 # и для этих студентов, лекторов, ревьюверов вывести через print атрибуты и методы (просто визуализировать, что код рабочий)
 # А также написать две функции (одну для студентов, другую для лекторов), которые берут на вход принимать:
