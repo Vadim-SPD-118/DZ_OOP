@@ -85,7 +85,7 @@ class Reviewer(Mentor):
                 f'Имя: {self.name}\n'
                 f'Фамилия: {self.surname}\n')
 
-# Создание объектов
+# creating objects
 best_student_1 = Student('Ruoy', 'Eman', 'муж')
 best_student_1.courses_in_progress += ['Python', 'Java']
 best_student_1.finished_courses = ['Введение в программирование']
@@ -106,7 +106,7 @@ cool_speaker_1.courses_attached += ['Python', 'Java']
 cool_speaker_2 = Lecturer('Billie', 'Holyday')
 cool_speaker_2.courses_attached += ['Python', 'Java']
 
-# Оценка студентов и лекторов
+# Assessment of students and lecturers
 cool_reviever_1.rate_hw(best_student_1, 'Python', 8)
 cool_reviever_1.rate_hw(best_student_1, 'Python', 5)
 cool_reviever_1.rate_hw(best_student_1, 'Java', 10)
@@ -127,7 +127,7 @@ best_student_2.rate_speaker(cool_speaker_2, 'Python', 10)
 best_student_2.rate_speaker(cool_speaker_2, 'Java', 10)
 best_student_2.rate_speaker(cool_speaker_2, 'Java', 9)
 
-# Вывод результатов
+# output of results
 print(best_student_1)
 print(best_student_2)
 print(cool_reviever_1)
@@ -135,7 +135,7 @@ print(cool_reviever_2)
 print(cool_speaker_1)
 print(cool_speaker_2)
 
-# Сравнение лекторов
+# comparison of lecturers
 if cool_speaker_1 > cool_speaker_2:
     print(f'{cool_speaker_1.name} {cool_speaker_1.surname} лучше, чем {cool_speaker_2.name} {cool_speaker_2.surname}')
 elif cool_speaker_1 < cool_speaker_2:
@@ -143,7 +143,7 @@ elif cool_speaker_1 < cool_speaker_2:
 else:
     print(f'{cool_speaker_1.name} {cool_speaker_1.surname} и {cool_speaker_2.name} {cool_speaker_2.surname} имеют одинаковую среднюю оценку')
 
-# Сравнение студентов
+# comparison of students
 if best_student_1 > best_student_2:
     print(f'{best_student_1.name} {best_student_1.surname} лучше, чем {best_student_2.name} {best_student_2.surname}')
 elif best_student_1 < best_student_2:
@@ -174,14 +174,14 @@ def average_lecturer_grade(lecturers, course):
     
     return total / count if count > 0 else 0
 
-# Проверка работы функций
+# Checking the operation of the function
 students = [best_student_1, best_student_2]
 lecturers = [cool_speaker_1, cool_speaker_2]
 
-# Подсчет средней оценки за домашние задания по курсу 'Python'
+# Calculating the average grade for homework in a course 'Python'
 avg_student_grade_python = average_student_grade(students, 'Python')
 print(f'Средняя оценка за домашние задания по курсу "Python": {avg_student_grade_python:.1f}')
 
-# Подсчет средней оценки за лекции по курсу 'Python'
+# Calculating the average grade for lectures in a course 'Python'
 avg_lecturer_grade_python = average_lecturer_grade(lecturers, 'Python')
 print(f'Средняя оценка за лекции по курсу "Python": {avg_lecturer_grade_python:.1f}')
