@@ -7,32 +7,33 @@ class Student:
         self.courses_in_progress = []
         self.grades = {}
 
-    # Метод выставления оценок лекторам
     def rate_speaker(self, speaker, course, grade_speaker):
         if isinstance(speaker, Lecturer) and course in speaker.courses_attached and course in self.courses_in_progress:
-            if course in speaker.grades:    
-                speaker.grades[course].append(grade_speaker)
-            else:
-                speaker.grades[course] = [grade_speaker]
+            speaker.grades.setdefault(course, []).append(grade_speaker)
         else:
             return 'Ошибка'
 
-    # Метод вычисления средней оценки за лекции   
     def average_grade(self):
-        total = 0
-        count = 0
-        for grades in self.grades.values():
-            total += sum(grades)
-            count += len(grades)
+        total = sum(sum(grades) for grades in self.grades.values())
+        count = sum(len(grades) for grades in self.grades.values())
         return total / count if count > 0 else 0
+
+    def __lt__(self, other):
+        if not isinstance(other, Student):
+            return NotImplemented
+        return self.average_grade() < other.average_grade()
     
-    # Перегрузка метода
+    def __gt__(self, other):
+        if not isinstance(other, Student):
+            return NotImplemented
+        return self.average_grade() > other.average_grade()
+
     def __str__(self):
-        return (f'\n'
-                f'Студент\n'
+        return (f'Студент\n'
                 f'Имя: {self.name}\n'
                 f'Фамилия: {self.surname}\n'
-                f'Средняя оценка за домашние задания: {self.average_grade():.1f}\n'
+                f'Пол: {self.gender}\n'
+                f'Средняя оценка: {self.average_grade():.1f}\n'
                 f'Курсы в процессе изучения: {", ".join(self.courses_in_progress)}\n'
                 f'Завершенные курсы: {", ".join(self.finished_courses)}\n')
 
@@ -41,40 +42,41 @@ class Mentor:
         self.name = name
         self.surname = surname
         self.courses_attached = []
-        
+
 class Lecturer(Mentor):
     def __init__(self, name, surname):
         super().__init__(name, surname)
         self.grades = {}
 
-    # Метод вычисления средней оценки за лекции
     def average_grade(self):
-        total = 0
-        count = 0
-        for grades in self.grades.values():
-            total += sum(grades)
-            count += len(grades)
+        total = sum(sum(grades) for grades in self.grades.values())
+        count = sum(len(grades) for grades in self.grades.values())
         return total / count if count > 0 else 0
+
+    def __lt__(self, other):
+        if not isinstance(other, Lecturer):
+            return NotImplemented
+        return self.average_grade() < other.average_grade()
     
+    def __gt__(self, other):
+        if not isinstance(other, Lecturer):
+            return NotImplemented
+        return self.average_grade() > other.average_grade()
+
     def __str__(self):
         return (f'Лектор\n'
                 f'Имя: {self.name}\n'
                 f'Фамилия: {self.surname}\n'
-                f'Средняя оценка за лекции: {self.average_grade():.1f}\n')
+                f'Средняя оценка: {self.average_grade():.1f}\n')
 
 
-    # Задание № 1. -Создаём класс-наследник от Mentor - Reviewer (эксперты, проверяющие домашние задания)
 class Reviewer(Mentor):
     def __init__(self, name, surname):
         super().__init__(name, surname)
 
-        # Создаём метод выставления оценок студентам
     def rate_hw(self, student, course, grade):
         if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress:
-            if course in student.grades:
-                student.grades[course].append(grade)
-            else:
-                student.grades[course] = [grade]
+            student.grades.setdefault(course, []).append(grade)
         else:
             return 'Ошибка'
         
@@ -83,12 +85,12 @@ class Reviewer(Mentor):
                 f'Имя: {self.name}\n'
                 f'Фамилия: {self.surname}\n')
 
-
-best_student_1 = Student('Ruoy', 'Eman', 'your_gender')
+# Создание объектов
+best_student_1 = Student('Ruoy', 'Eman', 'муж')
 best_student_1.courses_in_progress += ['Python', 'Java']
 best_student_1.finished_courses = ['Введение в программирование']
 
-best_student_2 = Student('Elvis', 'Presley', 'your_gender')
+best_student_2 = Student('Elvis', 'Presley', 'муж')
 best_student_2.courses_in_progress += ['Python', 'Java']
 best_student_2.finished_courses = ['Git']
  
@@ -103,7 +105,8 @@ cool_speaker_1.courses_attached += ['Python', 'Java']
 
 cool_speaker_2 = Lecturer('Billie', 'Holyday')
 cool_speaker_2.courses_attached += ['Python', 'Java']
- 
+
+# Оценка студентов и лекторов
 cool_reviever_1.rate_hw(best_student_1, 'Python', 8)
 cool_reviever_1.rate_hw(best_student_1, 'Python', 5)
 cool_reviever_1.rate_hw(best_student_1, 'Java', 10)
@@ -123,8 +126,8 @@ best_student_2.rate_speaker(cool_speaker_2, 'Python', 10)
 best_student_2.rate_speaker(cool_speaker_2, 'Python', 10)
 best_student_2.rate_speaker(cool_speaker_2, 'Java', 10)
 best_student_2.rate_speaker(cool_speaker_2, 'Java', 9)
- 
 
+# Вывод результатов
 print(best_student_1)
 print(best_student_2)
 print(cool_reviever_1)
@@ -132,15 +135,53 @@ print(cool_reviever_2)
 print(cool_speaker_1)
 print(cool_speaker_2)
 
+# Сравнение лекторов
+if cool_speaker_1 > cool_speaker_2:
+    print(f'{cool_speaker_1.name} {cool_speaker_1.surname} лучше, чем {cool_speaker_2.name} {cool_speaker_2.surname}')
+elif cool_speaker_1 < cool_speaker_2:
+    print(f'{cool_speaker_2.name} {cool_speaker_2.surname} лучше, чем {cool_speaker_1.name} {cool_speaker_1.surname}')
+else:
+    print(f'{cool_speaker_1.name} {cool_speaker_1.surname} и {cool_speaker_2.name} {cool_speaker_2.surname} имеют одинаковую среднюю оценку')
 
-# и для этих студентов, лекторов, ревьюверов вывести через print атрибуты и методы (просто визуализировать, что код рабочий)
-# А также написать две функции (одну для студентов, другую для лекторов), которые берут на вход принимать:
-# список студенотов и предмет('Git' например)
-# вход:
-# st_list = [student_1, student_2]
-# по типу:
-# def all_st_gr_average(st_list, 'Git')
+# Сравнение студентов
+if best_student_1 > best_student_2:
+    print(f'{best_student_1.name} {best_student_1.surname} лучше, чем {best_student_2.name} {best_student_2.surname}')
+elif best_student_1 < best_student_2:
+    print(f'{best_student_2.name} {best_student_2.surname} лучше, чем {best_student_1.name} {best_student_1.surname}')
+else:
+    print(f'{best_student_1.name} {best_student_1.surname} и {best_student_2.name} {best_student_2.surname} имеют одинаковую среднюю оценку')
 
-# а на выходе:
-# f'Средняя оценка по курсу {ttl_course} для всех лекторов: {round(sum_av_all / q_lr, 1)}
-# или сообщать, что нет оценок на данном курсе
+
+def average_student_grade(students, course):
+    total = 0
+    count = 0
+    
+    for student in students:
+        if course in student.grades:
+            total += sum(student.grades[course])
+            count += len(student.grades[course])
+    
+    return total / count if count > 0 else 0
+
+def average_lecturer_grade(lecturers, course):
+    total = 0
+    count = 0
+    
+    for lecturer in lecturers:
+        if course in lecturer.grades:
+            total += sum(lecturer.grades[course])
+            count += len(lecturer.grades[course])
+    
+    return total / count if count > 0 else 0
+
+# Проверка работы функций
+students = [best_student_1, best_student_2]
+lecturers = [cool_speaker_1, cool_speaker_2]
+
+# Подсчет средней оценки за домашние задания по курсу 'Python'
+avg_student_grade_python = average_student_grade(students, 'Python')
+print(f'Средняя оценка за домашние задания по курсу "Python": {avg_student_grade_python:.1f}')
+
+# Подсчет средней оценки за лекции по курсу 'Python'
+avg_lecturer_grade_python = average_lecturer_grade(lecturers, 'Python')
+print(f'Средняя оценка за лекции по курсу "Python": {avg_lecturer_grade_python:.1f}')
